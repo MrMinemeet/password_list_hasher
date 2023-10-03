@@ -1,6 +1,6 @@
 [package]
 name = "password_list_hasher"
-version = "0.1.3"
+version = "0.1.4"
 edition = "2021"
 description = "A tool to hash a list of passwords"
 authors = ["Alexander Voglsperger (MrMinemeet) <alex@wtf-my-code.works>"]
@@ -11,3 +11,5 @@ authors = ["Alexander Voglsperger (MrMinemeet) <alex@wtf-my-code.works>"]
 [dependencies]
 md5 = "0.7.0"
 sha1_smol = "1.0.0"
+sha2 = "0.10"
+sha3 = "0.10"
