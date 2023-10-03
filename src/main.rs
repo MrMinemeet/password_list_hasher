@@ -1,8 +1,23 @@
+use std::fs;
 use sha1_smol::Sha1;
 
 fn main() {
-	hash_string("HELLO", Algorithms::MD5);
-	hash_string("HELLO", Algorithms::SHA1);
+	let content = read_from_file("passwords.txt");
+
+	if content.is_err() {
+		println!("Could not read from file: {}", content.unwrap_err());
+		std::process::exit(1)
+	}
+
+	for line in content.unwrap().split("\n") {
+		hash_string(line, Algorithms::MD5);
+		hash_string(line, Algorithms::SHA1);
+	}
+
+}
+
+fn read_from_file(file_path: &str) -> Result<String, std::io::Error> {
+	return fs::read_to_string(file_path);
 }
 
 fn hash_string(to_hash: &str, algorithm: Algorithms) {
