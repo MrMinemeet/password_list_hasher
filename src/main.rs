@@ -1,8 +1,9 @@
 use std::fs;
 use std::env;
-use sha1_smol::Sha1;
+use md5::Md5;
+use sha1::Sha1;
 use sha2::{Sha256, Sha512, Digest};
-use sha3::{Sha3_256,Sha3_512};
+use sha3::{Sha3_256, Sha3_512};
 
 fn main() {
 	let path = retrieve_path();
@@ -50,13 +51,16 @@ fn hash_string(to_hash: &str, algorithm: Algorithms) {
 	let digest_str: String;
 	match algorithm {
 		Algorithms::MD5 => {
-			let digest = md5::compute(to_hash);
+			let mut hasher = Md5::new();
+			hasher.update(to_hash.as_bytes());
+			let digest = hasher.finalize();
 			digest_str = format!("{:x}", digest);
-		},
+		}
 		Algorithms::SHA1 => {
 			let mut hasher = Sha1::new();
 			hasher.update(to_hash.as_bytes());
-			digest_str = hasher.digest().to_string();
+			let digest = hasher.finalize();
+			digest_str = format!("{:x}", digest);
 		}
 		Algorithms::SHA2_256 => {
 			let mut hasher = Sha256::new();
