@@ -1,0 +1,11 @@
+[package]
+name = "password_list_hasher"
+version = "0.1.0"
+edition = "2021"
+description = "A tool to hash a list of passwords"
+authors = ["Alexander Voglsperger (MrMinemeet) <alex@wtf-my-code.works>"]
+
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
