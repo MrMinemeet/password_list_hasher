@@ -1,6 +1,6 @@
 [package]
 name = "password_list_hasher"
-version = "0.1.4"
+version = "0.2.0"
 edition = "2021"
 description = "A tool to hash a list of passwords"
 authors = ["Alexander Voglsperger (MrMinemeet) <alex@wtf-my-code.works>"]
