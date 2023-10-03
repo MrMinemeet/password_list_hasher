@@ -14,3 +14,4 @@ target/
 
 # I don't want this shitty folder
 .idea/
+passwords.txt
