@@ -1,6 +1,8 @@
 use std::fs;
 use std::env;
 use sha1_smol::Sha1;
+use sha2::{Sha256, Sha512, Digest};
+use sha3::{Sha3_256,Sha3_512};
 
 fn main() {
 	let path = retrieve_path();
@@ -17,6 +19,10 @@ fn main() {
 			println!("Hashing {}", to_hash);
 			hash_string(line, Algorithms::MD5);
 			hash_string(line, Algorithms::SHA1);
+			hash_string(line, Algorithms::SHA2_256);
+			hash_string(line, Algorithms::SHA2_512);
+			hash_string(line, Algorithms::SHA3_256);
+			hash_string(line, Algorithms::SHA3_512);
 		}
 	}
 
@@ -52,6 +58,32 @@ fn hash_string(to_hash: &str, algorithm: Algorithms) {
 			hasher.update(to_hash.as_bytes());
 			digest_str = hasher.digest().to_string();
 		}
+		Algorithms::SHA2_256 => {
+			let mut hasher = Sha256::new();
+			hasher.update(to_hash.as_bytes());
+			let digest = hasher.finalize();
+			digest_str = format!("{:x}", digest);
+
+		}
+		Algorithms::SHA2_512 => {
+			let mut hasher = Sha512::new();
+			hasher.update(to_hash.as_bytes());
+			let digest = hasher.finalize();
+			digest_str = format!("{:x}", digest);
+		}
+		Algorithms::SHA3_256 => {
+			let mut hasher = Sha3_256::new();
+			hasher.update(to_hash.as_bytes());
+			let digest = hasher.finalize();
+			digest_str = format!("{:x}", digest);
+
+		}
+		Algorithms::SHA3_512 => {
+			let mut hasher = Sha3_512::new();
+			hasher.update(to_hash.as_bytes());
+			let digest = hasher.finalize();
+			digest_str = format!("{:x}", digest);
+		}
 	}
 	println!("{} Digest: {}",algorithm.to_string(), digest_str);
 }
@@ -59,14 +91,22 @@ fn hash_string(to_hash: &str, algorithm: Algorithms) {
 // -----------------------------------------------------------------------
 enum Algorithms {
 	MD5,
-	SHA1
+	SHA1,
+	SHA2_256,
+	SHA2_512,
+	SHA3_256,
+	SHA3_512
 }
 
 impl std::string::ToString for Algorithms {
 	fn to_string(&self) -> String {
 		match self {
 			Algorithms::MD5 => "MD5".to_string(),
-			Algorithms::SHA1 => "SHA1".to_string()
+			Algorithms::SHA1 => "SHA1".to_string(),
+			Algorithms::SHA2_256 => "SHA2-256".to_string(),
+			Algorithms::SHA2_512 => "SHA2-512".to_string(),
+			Algorithms::SHA3_256 => "SHA3-256".to_string(),
+			Algorithms::SHA3_512 => "SHA-512".to_string()
 		}
 	}
 }
