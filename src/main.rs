@@ -1,8 +1,10 @@
 use std::fs;
+use std::env;
 use sha1_smol::Sha1;
 
 fn main() {
-	let content = read_from_file("passwords.txt");
+	let path = retrieve_path();
+	let content = read_from_file(path.as_str());
 
 	if content.is_err() {
 		println!("Could not read from file: {}", content.unwrap_err());
@@ -10,10 +12,28 @@ fn main() {
 	}
 
 	for line in content.unwrap().split("\n") {
-		hash_string(line, Algorithms::MD5);
-		hash_string(line, Algorithms::SHA1);
+		let to_hash = line.trim();
+		if to_hash.len() > 0 {
+			println!("Hashing {}", to_hash);
+			hash_string(line, Algorithms::MD5);
+			hash_string(line, Algorithms::SHA1);
+		}
 	}
 
+}
+
+/**
+ * Allows passing of a file as an argument. Otherwise it will default to "passwords.txt"
+ */
+fn retrieve_path() -> String {
+	let args: Vec<String> = env::args().collect();
+	if args.len() < 2 {
+		println!("Defaulting to 'passwords.txt'");
+		return String::from("passwords.txt");
+	}
+	let file = args[1].clone();
+	println!("Using {file} as the input");
+	return file;
 }
 
 fn read_from_file(file_path: &str) -> Result<String, std::io::Error> {
@@ -21,7 +41,6 @@ fn read_from_file(file_path: &str) -> Result<String, std::io::Error> {
 }
 
 fn hash_string(to_hash: &str, algorithm: Algorithms) {
-	println!("Hashing {} with {}", to_hash, algorithm.to_string());
 	let digest_str: String;
 	match algorithm {
 		Algorithms::MD5 => {
@@ -34,7 +53,7 @@ fn hash_string(to_hash: &str, algorithm: Algorithms) {
 			digest_str = hasher.digest().to_string();
 		}
 	}
-	println!("Digest: {}", digest_str);
+	println!("{} Digest: {}",algorithm.to_string(), digest_str);
 }
 
 // -----------------------------------------------------------------------
