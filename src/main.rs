@@ -1,4 +1,5 @@
 use std::fs;
+use std::path::{Path, PathBuf};
 use std::env;
 use md5::Md5;
 use sha1::Sha1;
@@ -6,10 +7,11 @@ use sha2::{Sha256, Sha512, Digest};
 use sha3::{Sha3_256, Sha3_512};
 use whirlpool::Whirlpool;
 use blake2::Blake2b512;
+use hex::encode;
 
 fn main() {
 	let path = retrieve_path();
-	let content = read_from_file(path.as_str());
+	let content = read_from_file(path.as_path());
 
 	if content.is_err() {
 		println!("Could not read from file: {}", content.unwrap_err());
@@ -30,24 +32,23 @@ fn main() {
 			hash_string(line, Algorithms::BLAKE2);
 		}
 	}
-
 }
 
 /**
  * Allows passing of a file as an argument. Otherwise it will default to "passwords.txt"
  */
-fn retrieve_path() -> String {
+fn retrieve_path() -> PathBuf {
 	let args: Vec<String> = env::args().collect();
 	if args.len() < 2 {
 		println!("Defaulting to 'passwords.txt'");
-		return String::from("passwords.txt");
+		return PathBuf::from("passwords.txt");
 	}
 	let file = args[1].clone();
 	println!("Using {file} as the input");
-	return file;
+	return PathBuf::from(&file);
 }
 
-fn read_from_file(file_path: &str) -> Result<String, std::io::Error> {
+fn read_from_file(file_path: &Path) -> Result<String, std::io::Error> {
 	return fs::read_to_string(file_path);
 }
 
@@ -58,51 +59,51 @@ fn hash_string(to_hash: &str, algorithm: Algorithms) {
 			let mut hasher = Md5::new();
 			hasher.update(to_hash.as_bytes());
 			let digest = hasher.finalize();
-			digest_str = format!("{:x}", digest);
+			digest_str = encode(digest);
 		}
 		Algorithms::SHA1 => {
 			let mut hasher = Sha1::new();
 			hasher.update(to_hash.as_bytes());
 			let digest = hasher.finalize();
-			digest_str = format!("{:x}", digest);
+			digest_str = encode(digest);
 		}
 		Algorithms::SHA2_256 => {
 			let mut hasher = Sha256::new();
 			hasher.update(to_hash.as_bytes());
 			let digest = hasher.finalize();
-			digest_str = format!("{:x}", digest);
+			digest_str = encode(digest);
 
 		}
 		Algorithms::SHA2_512 => {
 			let mut hasher = Sha512::new();
 			hasher.update(to_hash.as_bytes());
 			let digest = hasher.finalize();
-			digest_str = format!("{:x}", digest);
+			digest_str = encode(digest);
 		}
 		Algorithms::SHA3_256 => {
 			let mut hasher = Sha3_256::new();
 			hasher.update(to_hash.as_bytes());
 			let digest = hasher.finalize();
-			digest_str = format!("{:x}", digest);
+			digest_str = encode(digest);
 
 		}
 		Algorithms::SHA3_512 => {
 			let mut hasher = Sha3_512::new();
 			hasher.update(to_hash.as_bytes());
 			let digest = hasher.finalize();
-			digest_str = format!("{:x}", digest);
+			digest_str = encode(digest);
 		}
 		Algorithms::Whirlpool => {
 			let mut hasher = Whirlpool::new();
 			hasher.update(to_hash.as_bytes());
 			let digest = hasher.finalize();
-			digest_str = format!("{:x}", digest);
+			digest_str = encode(digest);
 		}
 		Algorithms::BLAKE2 => {
 			let mut hasher = Blake2b512::new();
 			hasher.update(to_hash.as_bytes());
 			let digest = hasher.finalize();
-			digest_str = format!("{:x}", digest);
+			digest_str = encode(digest);
 
 		}
 	}
@@ -121,7 +122,7 @@ enum Algorithms {
 	BLAKE2 // Blake2b (64-Bit optimized)
 }
 
-impl std::string::ToString for Algorithms {
+impl ToString for Algorithms {
 	fn to_string(&self) -> String {
 		match self {
 			Algorithms::MD5 => "MD5".to_string(),
